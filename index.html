@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ژێرنووسکردنی فیلم شابڵۆد</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #050811 0%, #0f172a 50%, #1e1b4b 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        h2 { color: #38bdf8; font-size: 24px; }
+        .panel {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .group { display: flex; flex-direction: column; gap: 8px; width: 220px; }
+        label { font-size: 13px; color: #cbd5e1; }
+        input, select {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            outline: none;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+        }
+        select option { background: #0f172a; color: #fff; }
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            transition: 0.3s;
+        }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        
+        #player-box { display: none; flex-direction: column; gap: 20px; align-items: center; width: 100%; }
+        video { width: 100%; max-height: 65vh; border-radius: 14px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+
+        /* بەشی خوارەوە - پارێزراوە بۆ تیمی شابڵۆد ٢٠٢٦ */
+        .footer-badge {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(56, 189, 248, 0.05);
+            border-top: 1px solid rgba(56, 189, 248, 0.15);
+            border-radius: 0 0 24px 24px;
+            font-size: 14px;
+            color: #38bdf8;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2> ژێرنووسکردنی فیلم و دراما شابڵۆد</h2>
+
+    <div class="panel">
+        <div class="group">
+            <label>فایلی فیلم</label>
+            <input type="file" id="video-file" accept="video/*">
+        </div>
+        <div class="group">
+            <label>فایلی SRT</label>
+            <input type="file" id="srt-file" accept=".srt">
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="group">
+            <label>جۆری فۆنت (کوردی و جیهانی)</label>
+            <select id="font-family">
+                <option value="NRT Bold, NRT, sans-serif">فۆنتی NRT</option>
+                <option value="Rudaw, sans-serif">فۆنتی Rudaw</option>
+                <option value="Peshawa, sans-serif">فۆنتی Peshawa</option>
+                <option value="Kurdish, sans-serif">فۆنتی کوردی گشتی</option>
+                <option value="Tahoma, sans-serif">Tahoma</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="Segoe UI, sans-serif">Segoe UI</option>
+            </select>
+        </div>
+        <div class="group">
+            <label>قەبارەی فۆنت</label>
+            <input type="number" id="font-size" value="26" min="15" max="60">
+        </div>
+        <div class="group">
+            <label>ڕەنگی دەق</label>
+            <input type="color" id="font-color" value="#ffffff" style="height: 42px; padding: 4px;">
+        </div>
+        <div class="group">
+            <label>باکگراوەندی ژێرنووس</label>
+            <select id="subtitle-bg">
+                <option value="no">نەخێر</option>
+                <option value="yes">بەڵێ</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn" id="start-btn">پەخشکردنی ڕاستەوخۆ</button>
+
+    <div id="player-box">
+        <video id="video-player" controls playsinline>
+            <track id="video-track" kind="subtitles" srclang="ku" default>
+        </video>
+    </div>
+
+    <!-- مۆری تایبەتی تیمی شابڵۆد لە خواری خوارەوە لە ناوەند -->
+    <div class="footer-badge">
+        پارێزراوە بۆ تیمی شابڵۆد©٢٠٢٦
+    </div>
+</div>
+
+<script>
+    const videoFile = document.getElementById('video-file');
+    const srtFile = document.getElementById('srt-file');
+    const startBtn = document.getElementById('start-btn');
+    const playerBox = document.getElementById('player-box');
+    const videoPlayer = document.getElementById('video-player');
+    const videoTrack = document.getElementById('video-track');
+    
+    const fontFamilySelect = document.getElementById('font-family');
+    const fontSizeInput = document.getElementById('font-size');
+    const fontColorInput = document.getElementById('font-color');
+    const subtitleBgSelect = document.getElementById('subtitle-bg');
+
+    function updateSubtitleStyles() {
+        let styleTag = document.getElementById('dynamic-cue-style');
+        if (!styleTag) {
+            styleTag = document.createElement('style');
+            styleTag.id = 'dynamic-cue-style';
+            document.head.appendChild(styleTag);
+        }
+        const bg = subtitleBgSelect.value === 'yes' ? 'rgba(0, 0, 0, 0.7)' : 'transparent';
+        styleTag.innerHTML = `
+            video::cue {
+                font-family: ${fontFamilySelect.value} !important;
+                font-size: ${fontSizeInput.value}px !important;
+                color: ${fontColorInput.value} !important;
+                background-color: ${bg} !important;
+                text-shadow: 2px 2px 4px #000, -2px -2px 4px #000, 0px 0px 4px #000 !important;
+            }
+        `;
+    }
+
+    [fontFamilySelect, fontSizeInput, fontColorInput, subtitleBgSelect].forEach(el => {
+        el.addEventListener('input', updateSubtitleStyles);
+        el.addEventListener('change', updateSubtitleStyles);
+    });
+
+    startBtn.addEventListener('click', () => {
+        if (!videoFile.files[0] || !srtFile.files[0]) {
+            alert('تکایە هەردوو فایلی فیلم و ژێرنووس هەڵبژێرە!');
+            return;
+        }
+
+        const vObj = videoFile.files[0];
+        const sObj = srtFile.files[0];
+
+        playerBox.style.display = 'flex';
+        videoPlayer.src = URL.createObjectURL(vObj);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            let vtt = "WEBVTT\n\n" + e.target.result
+                .replace(/\r\n/g, '\n')
+                .replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, '$1.$2')
+                .replace(/(\d{2}:\d{2}),(\d{3})/g, '00:$1.$2');
+            
+            videoTrack.src = URL.createObjectURL(new Blob([vtt], {type: 'text/vtt'}));
+            if(videoPlayer.textTracks[0]) videoPlayer.textTracks[0].mode = 'showing';
+            updateSubtitleStyles();
+        };
+        reader.readAsText(sObj);
+    });
+</script>
+
+</body>
+</html>
